@@ -21,12 +21,12 @@ export class AddtoCartService {
     const response = { message: 'Invalid request', responseCode: 400, token: null };
     try {
       const setting = await this.settingRepository.findOne({ where: {} })
-      const userId = decodedUser.is
-      if (body.quantity <= setting.maxQuantity) {
+      const userId = decodedUser.id
+      if (body.quantity <= setting.maxQuantity || body.quantity <= 5 ) {
         if (body.quantity > 0) {
           const product = await this.productRepository.findOne({ where: { id: body.productId } })
           const totalAmount = product.amount * body.quantity
-          const check = await this.repository.findOne({ where: { productId: body.product, userId: userId, status: 0 } })
+          const check = await this.repository.findOne({ where: { productId: body.productId, userId: userId, status: 0 } })
           if (check) {
             await this.repository.update({ id: check.id }, { quantity: body.quantity, totalAmount: totalAmount })
             response.message = 'successfully upated cart';
@@ -46,12 +46,12 @@ export class AddtoCartService {
 
         } else {
           response.message = 'quantity cant be negative or zero';
-          response.responseCode = 200;
+          response.responseCode = 501;
           return response
         }
       } else {
         response.message = `quantity cant be greater than ${setting.maxQuantity}`;
-        response.responseCode = 200;
+        response.responseCode = 500;
         return response
       }
     } catch (error) {

@@ -6,11 +6,11 @@ import { Public } from 'src/public.decorator';
 export class UserController {
   constructor(private readonly service: UserService) { }
 
+  @Public()
   @Post()
   create(@Body() body) {
     return this.service.create(body);
   }
-
 
   @Get()
   findAll(@Req() req) {
